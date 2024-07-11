@@ -1,4 +1,3 @@
-
 return {
 	'VonHeikemen/lsp-zero.nvim',
 	dependencies = {
@@ -41,6 +40,19 @@ return {
 					local lua_opts = lsp_zero.nvim_lua_ls()
 					require('lspconfig').lua_ls.setup(lua_opts)
 				end,
+                clangd = function()
+                    require('lspconfig').clangd.setup({
+                        cmd = { "clangd", "--log=verbose" },
+                        on_attach = function(client, bufnr)
+                            lsp_zero.on_attach(client, bufnr)
+                        end,
+                        capabilities = require('cmp_nvim_lsp').default_capabilities(),
+                        settings = {
+                            clangd = {
+                            }
+                        }
+                    })
+                end,
 			}
 		})
 
@@ -62,5 +74,26 @@ return {
 				['<C-Space>'] = cmp.mapping.complete(),
 			}),
 		})
+
+        -- Disable virtual text and signs for hints and warnings, keep errors
+        vim.diagnostic.config({
+            virtual_text = {
+                severity = {
+                    min = vim.diagnostic.severity.ERROR,
+                },
+            },
+            signs = {
+                severity = {
+                    min = vim.diagnostic.severity.ERROR,
+                },
+            },
+            underline = {
+                severity = {
+                    min = vim.diagnostic.severity.ERROR,
+                },
+            },
+            update_in_insert = false,
+            severity_sort = true,
+        })
 	end,
 }
